@@ -51,24 +51,21 @@ public class LudHashMap {
         
         int i = getHash(k); // finner hashverdi for gitt nøkkel
         
-        LudHashMapEntry nyNode = new LudHashMapEntry(k, v); // nyNode som skal settes inn
+        LudHashMapEntry newEntry = new LudHashMapEntry(k, v); // nyNode som skal settes inn
 
-        boolean inserted = false; // ny node er ikke satt inn ennå
-        while(!inserted) {
-            if (array[i] == null) {  // plassen som nøkkel hasher til er tom
-                array[i] = nyNode; // sett inn nytt element
+        while(true) {
+            if (array[i] == null) {  // hvis plassen som nøkkel hasher til er tom, kan ikke element finnes noe sted i arrayet
+                array[i] = newEntry; // sett inn nytt element
                 n++; // øker antallet aktive elementer i strukturen
-                inserted = true; // bryt loop
-
                 // System.out.println(array[i] + " was added on index " + i);
-
-            } else if (array[i].key.equals(k)) { // plassen som ble hashet til er opptatt med lik nøkkel
-                array[i] = nyNode; // sett inn ny node
-                inserted = true; // bryt loop
-                // kun oppdatering, øker ikke n
+                break; // bryt loop
                 
+            } else if (array[i].key.equals(k)) { // plassen som ble hashet til er opptatt med entry med lik nøkkel
+                array[i] = newEntry; // erstatter plassen med newEntry
                 // System.out.println(array[i] + " was updated");
-            } else { // plassen som ble hashet til er opptatt, men inneholder annen nøkkel. Dette er en kollisjon
+                break; // bryt loop
+                
+            } else { // KOLLISJON, plassen som ble hashet til er opptatt, men inneholder annen nøkkel
                 i = (i + 1) % array.length; // prøv neste i, men sørg for å ikke vokse større enn antall plasser i array
             }
         }
@@ -91,10 +88,10 @@ public class LudHashMap {
 
         // System.out.println("Key '" + k + "' was hashed to '" + i + "'");
         
-        boolean removed = false;
-        while(!removed) {
-            if (array[i] == null) return; // hvis plassen er tom, kan ikke dette element finnes
-            if (array[i].key.equals(k)) {  // plassen i arrayet er ikke-tom og nøkkel stemmer
+        while(true) {
+            if (array[i] == null) { // hvis plassen som ble hashet til er tom, kan ikke dette element finnes noe sted i arrayet 
+                return; 
+            } else if (array[i].key.equals(k)) {  // plassen i arrayet er ikke-tom og nøkkel stemmer
                 if (array[i].removed) { // node er allerede markert for sletting, gjør ingenting
                     // System.out.println(array[i] + " er allerede markert for sletting");
                     return;
@@ -102,8 +99,8 @@ public class LudHashMap {
                     // System.out.println(array[i] + " ble markert for sletting");
                     n--; // minske n, siden vi har en mindre aktiv node
                     array[i].removed = true; // marker for sletting
+                    break;
                 }
-                removed = true; // bryt loop
             } 
             i = (i+1) % array.length; // hvis plassen var tom, eller noden som lå der hadde annen nøkkel, prøv neste
         }
@@ -202,5 +199,7 @@ public class LudHashMap {
             System.out.println(repr);
         }
     } 
-    
+    public boolean contains(String key) {
+        return get(key) != -1; // get method returns -1 if it cannot find key.
+    }
 }

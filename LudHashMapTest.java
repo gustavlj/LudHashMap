@@ -39,7 +39,7 @@ public class LudHashMapTest {
             realMap.put(key, i);
         }
 
-        // remove same keys in both hashmaps
+        // remove same random keys in both hashmaps
         for (int i = 0; i < removes; i++) {
             String key = randomStrings[randomIntBetween(0, amount-1)];
             ludMap.remove(key);
@@ -47,7 +47,7 @@ public class LudHashMapTest {
         }
 
         for (Entry <String, Integer> entry : realMap.entrySet()) {
-            if (ludMap.get(entry.getKey()) != -1) {
+            if (ludMap.contains(entry.getKey())) {
                 System.out.print("Nøkkel " + entry.getKey() + " finnes");
                 if (ludMap.get(entry.getKey()) == entry.getValue()) {
                     System.out.println(" med lik verdi " + entry.getValue());
@@ -62,40 +62,7 @@ public class LudHashMapTest {
         System.out.println("Ferdig!");
     }
 
-    public void testProgram() {
-        int startAsciiIndex = 33;
-        int stopAsciiIndex = 127;
-        LudHashMap lhm = new LudHashMap(); // key is string, value is int
-        
-        System.out.println("\nInserting keys and values");
-        for (int i = startAsciiIndex; i < stopAsciiIndex; i++) {
-            lhm.put((char)i + "", i); // '(char)i + ""' will find the ASCII of i, then cast to String
-        }
-
-        System.out.println("\nTesting get method");
-        for (int i = startAsciiIndex; i < stopAsciiIndex; i++) {
-            System.out.println("Is ASCII of " + (char)i + " = " + i + "?: " + (lhm.get((char)i + "") == i));
-            lhm.put((char)i + "", i); // '(char)i + ""' will find the ASCII of i, then cast to String
-        }
-
-        System.out.println("\nTesting remove method");
-        lhm.remove("A");
-        System.out.println("After remove, return value of 'A' = -1 ?: " + (lhm.get("A") == -1));
-        lhm.remove("U");
-        System.out.println("After remove, return value of 'U' = -1 ?: " + (lhm.get("U") == -1));
-        lhm.remove("^");
-        System.out.println("After remove, return value of '^' = -1 ?: " + (lhm.get("^") == -1));
-        
-        System.out.println("\nTesting update method");
-        lhm.put("Q", 100);
-        System.out.println("After update, return value of 'Q' = 100 ?: " + (lhm.get("Q") == 100));
-        lhm.put(" ", 100);
-        System.out.println("After update, return value of 'space' = 100 ?: " + (lhm.get(" ") == 100));
-        lhm.put("Y", 100);
-        System.out.println("After update, return value of 'Y' = 100 ?: " + (lhm.get("Y") == 100));
-
-        lhm.printAllEntries();  
-    }
+    
 
     public static boolean arrayContains(String [] array, String x) {
         for (String s : array) {
