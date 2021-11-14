@@ -46,6 +46,7 @@ public class LudHashMapTest {
             realMap.remove(key);
         }
 
+        // check that ludMap contains all elements in HashMap
         for (Entry <String, Integer> entry : realMap.entrySet()) {
             if (ludMap.contains(entry.getKey())) {
                 System.out.print("Nøkkel " + entry.getKey() + " finnes");
@@ -59,6 +60,20 @@ public class LudHashMapTest {
             }
         }
 
+        // Check that HashMap contains all elements in LudMap
+        System.out.println("\nLudMaps element mot HashMaps:");
+        for (String key : ludMap.keySet()) {
+            if (realMap.containsKey(key)) {
+                System.out.print("Nøkkel " + key + " finnes");
+                if (realMap.get(key) == ludMap.get(key)) {
+                    System.out.println(" med lik verdi " + ludMap.get(key));
+                } else {
+                    System.out.println(" men med ulik verdi " + ludMap.get(key));
+                }
+            } else {
+                System.out.println("Nøkkel " + key + " finnes ikke");
+            }
+        }
         System.out.println("Ferdig!");
     }
 

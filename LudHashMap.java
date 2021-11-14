@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 /**
  * En implementasjon av en Hash Map med linear probing.
  * 
@@ -189,8 +191,36 @@ public class LudHashMap {
             System.out.println(repr);
         }
     } 
+    
     public boolean contains(String key) {
         return get(key) != -1; // get method returns -1 if it cannot find key.
     }
 
+    public LudKeySet keySet() {
+        return new LudKeySet();
+    }
+
+    public class LudKeySet implements Iterable<String> { 
+        public Iterator<String> iterator() {
+            return new LudKeySetIterator();
+        }
+        public class LudKeySetIterator implements Iterator<String> {
+            int i = 0;
+        
+            @Override
+            public boolean hasNext() {
+                while (i < array.length) {
+                    if (array[i] != null && !array[i].removed) return true;
+                    i ++; 
+                }
+                return false;
+            }
+            @Override 
+            public String next() {
+                int tmp = i;
+                i++;
+                return array[tmp].key;
+            }
+        }
+    }
 }
