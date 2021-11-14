@@ -22,7 +22,9 @@ public class LudHashMap {
 
     LudHashMapEntry [] array = new LudHashMapEntry [5]; // array starter med lengde 5
     int n = 0; // n er antallet "aktive" elementer i arrayet
-    
+    final double shrinkLimit = 0.3;
+    final double expandLimit = 0.6;
+
     /**
      * Et LudHashMapEntry er en "node" i listen
      */
@@ -50,9 +52,8 @@ public class LudHashMap {
     public void put(String k, int v) {
         
         int i = getHash(k); // finner hashverdi for gitt nøkkel
-        
         LudHashMapEntry newEntry = new LudHashMapEntry(k, v); // nyNode som skal settes inn
-
+        
         while(true) {
             if (array[i] == null) {  // hvis plassen som nøkkel hasher til er tom, kan ikke element finnes noe sted i arrayet
                 array[i] = newEntry; // sett inn nytt element
@@ -69,12 +70,7 @@ public class LudHashMap {
                 i = (i + 1) % array.length; // prøv neste i, men sørg for å ikke vokse større enn antall plasser i array
             }
         }
-
-        // etter innsetting, sjekk om array må ekspandere
-        if ((double) n / (double) array.length > 0.6) {
-            // System.out.println("Forholdet er " + (double) n / (double) array.length + " expanderer array.");
-            expandArray(); // ekspanderer array
-        }
+        if (shouldExpand()) expandArray(); // ekspander array hvis nødvendig
     }
     
     /**
@@ -85,30 +81,18 @@ public class LudHashMap {
     public void remove (String k) {
         
         int i = getHash(k); // finner nøkkelens hashverdi
-
         // System.out.println("Key '" + k + "' was hashed to '" + i + "'");
         
-        while(true) {
-            if (array[i] == null) { // hvis plassen som ble hashet til er tom, kan ikke dette element finnes noe sted i arrayet 
-                return; 
-            } else if (array[i].key.equals(k)) {  // plassen i arrayet er ikke-tom og nøkkel stemmer
-                if (array[i].removed) { // node er allerede markert for sletting, gjør ingenting
-                    // System.out.println(array[i] + " er allerede markert for sletting");
-                    return;
-                } else { // node er ikke markert for sletting
-                    // System.out.println(array[i] + " ble markert for sletting");
-                    n--; // minske n, siden vi har en mindre aktiv node
+        while(array[i] != null) { // hvis plassen som ble hashet til er tom, kan ikke dette element finnes noe sted i arrayet
+            if (array[i].key.equals(k)) {  // hvis nøkkel nøkkel stemmer
+                if (!array[i].removed) { // hvis nøkkel ikke allerede er markert for sletting
                     array[i].removed = true; // marker for sletting
-                    break;
-                }
-            } 
+                    n--; // minske n, siden vi har en mindre aktiv node
+                    if (shouldShrink()) shrinkArray(); // sjekk om vi bør forminske array, og gjør det
+                } 
+                return;
+            }
             i = (i+1) % array.length; // hvis plassen var tom, eller noden som lå der hadde annen nøkkel, prøv neste
-        }
-
-        // sjekk om vi bør forminske array
-        if ((double) n / (double) array.length < 0.3) {
-            // System.out.println("Forholdet er " + (double) n / (double) array.length + ", kryper array.");
-            shrinkArray();
         }
     }
 
@@ -157,6 +141,10 @@ public class LudHashMap {
         }
     }
 
+    private boolean shouldExpand() {
+        return (double) n / (double) array.length > expandLimit;
+    }
+
     private void expandArray() {
         LudHashMapEntry [] newArray = new LudHashMapEntry [array.length * 2]; // lager ny større array
         LudHashMapEntry [] tmp = array; // lagrer gammel array i tmp
@@ -171,7 +159,10 @@ public class LudHashMap {
         // System.out.println("Array was expanded to " + array.length);
         
     }
-
+    private boolean shouldShrink() {
+        return (double) n / (double) array.length < shrinkLimit;
+    }
+    
     private void shrinkArray() {
         LudHashMapEntry [] newArray = new LudHashMapEntry [array.length / 2]; // lager mindre array
         LudHashMapEntry [] tmp = array;
@@ -180,7 +171,6 @@ public class LudHashMap {
         for (LudHashMapEntry entry : tmp) {
             if (entry != null && !entry.removed) put(entry.key, entry.value);
         }
-        
         // System.out.println("Array was shrunk to " + array.length);   
     }
     
@@ -202,4 +192,5 @@ public class LudHashMap {
     public boolean contains(String key) {
         return get(key) != -1; // get method returns -1 if it cannot find key.
     }
+
 }
