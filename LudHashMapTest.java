@@ -1,3 +1,5 @@
+package LudHashMap.LudHashMap;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 
